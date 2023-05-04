@@ -21,7 +21,7 @@ func Handler(db *pgx.Conn) gin.HandlerFunc {
 			Title   string `json:"title"`
 			UUID    string `json:"uuid"`
 		}, 0)
-		const query = "SELECT * FROM title WHERE id_title=2"
+		const query = "SELECT * FROM title_history WHERE id_title=2"
 		err := pgxscan.Select(c, db, &data, query)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err.Error())
