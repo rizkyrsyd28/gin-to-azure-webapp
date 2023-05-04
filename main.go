@@ -1,21 +1,52 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"gopkg.in/fsnotify.v1"
+	"github.com/georgysavva/scany/v2/pgxscan"
+	"github.com/jackc/pgx/v5"
+	"net/http"
 	"os"
 	"strings"
+
+	"gopkg.in/fsnotify.v1"
 
 	"github.com/gin-gonic/gin"
 )
 
+func Handler(db *pgx.Conn) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		data := make([]struct {
+			IdTitle int    `json:"id_title"`
+			Title   string `json:"title"`
+			UUID    string `json:"uuid"`
+		}, 0)
+		const query = "SELECT * FROM title WHERE id_title=2"
+		err := pgxscan.Select(c, db, &data, query)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"hasil": data})
+	}
+}
+
 func main() {
 	r := gin.Default()
+
+	conn, err := pgx.Connect(context.Background(), "postgres://stima3_admin@stima3-chat:Rizkyrasy.id28@stima3-chat.postgres.database.azure.com:5432/stima3?sslmode=require")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "Hello Rizky",
 		})
 	})
+	r.GET("/db", Handler(conn))
 
 	// creates a new file watcher for App_offline.htm
 	watcher, err := fsnotify.NewWatcher()
