@@ -1,6 +1,10 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"os"
+
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
 	r := gin.Default()
@@ -10,5 +14,11 @@ func main() {
 		})
 	})
 
-	r.Run() // listen and serve on 0.0.0.0:8080
+	port := os.Getenv("HTTP_PLATFORM_PORT")
+
+	if port == "" {
+		port = "8080"
+	}
+
+	r.Run("127.0.0.1:" + port) // listen and serve on 0.0.0.0:8080
 }
