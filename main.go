@@ -35,7 +35,7 @@ func Handler(db *pgx.Conn) gin.HandlerFunc {
 func main() {
 	r := gin.Default()
 
-	conn, err := pgx.Connect(context.Background(), "postgres://stima3_admin@stima3-chat:Rizkyrasy.id28@stima3-chat.postgres.database.azure.com:5432/stima3?sslmode=require")
+	conn, err := pgx.Connect(context.Background(), "DB_URL")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
